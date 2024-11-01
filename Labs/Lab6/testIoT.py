@@ -9,7 +9,7 @@ import hrcalc
 
 m = max30102.MAX30102()
 
-host = "a1eebx1ktmwaqk-ats.iot.us-east-2.amazonaws.com"
+host = "a1s0215me7aosd-ats.iot.us-east-2.amazonaws.com"
 certPath = "/home/rbrin/Documents/connect_device_package/"
 clientId = "pi4"
 topic = "sensor"
@@ -39,18 +39,16 @@ myAWSIoTMQTTClient.connect()
 # Publish to the same topic in a loop forever
 dataHR = []
 while True:
-    for i in range(5):
-        red, ir = m.read_sequential()
+    red, ir = m.read_sequential()
 
-        dataHR[i * 100 : (i + 1) * 100] = red  # For raw data capturing. Not required!
-        hr, hr_valid, spo2, spo2_valid = hrcalc.calc_hr_and_spo2(
-            ir[:100], red[:100]
-        )  # Calculating heart rate and SpO2 values from raw data.
+    hr, hr_valid, spo2, spo2_valid = hrcalc.calc_hr_and_spo2(
+        ir[:100], red[:100]
+    )  # Calculating heart rate and SpO2 values from raw data.
 
     messageJson = json.dumps(
         {"HRvalue": hr, "HRvalid": hr_valid, "SpO2value": spo2, "SpO2valid": spo2_valid}
     )
     myAWSIoTMQTTClient.publish(topic, messageJson, 1)
     print("Published topic %s: %s\n" % (topic, messageJson))
-    time.sleep(1)
+#    time.sleep(1)
 myAWSIoTMQTTClient.disconnect()
